@@ -1,9 +1,12 @@
 /* these 4 lines are the most important with respect to styling the control */
-.calendar{border:1px solid #aaa;background:#555;font-family:verdana;font-size:12px;}
-.calendar table{color:#fff;}
-.calendar table td.hover{background:#ffc;color:#444;}
-.calendar .selected{border:1px dotted #999;}
+.calendar{background:#FFF;}
+.calendar table{color:#333 ; width: 100%; height: 100%;}
+.calendar table td.hover{background:#EAEAEA;color:#444;}
+.calendar table td.today{background:#efefef;}
+.calendar table td.weekend {color:#AAA;}
+.calendar table tr.head td {font-weight:bold; font-size: 0.9em;}
+.calendar table td.hl {font-weight: bold;}
 
-.calendar{overflow:auto;width:250px;height:175px;position:absolute;line-height:1em;border-radius:5px;-moz-user-select:none;-webkit-user-select: none;-khtml-user-select: none;user-select: none;}
-.calendar table{width:100%;height:100%;color:#fff;}
-.calendar table td{padding:3px;text-align:center;cursor:pointer;border-radius:2px;}
+.calendar table td.selected{background: #FFA900;color:#444;}
+.calendar{overflow:auto;width:15em;height:15em;line-height:1em;-moz-user-select:none;-webkit-user-select: none;-khtml-user-select: none;user-select: none;}
+.calendar table td{width:1.8em;text-align:center;cursor:pointer;}
