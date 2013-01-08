@@ -1,12 +1,19 @@
 (function($){
   $.fn.datePicker = function(opts) {
-    var defaults = {selected: null, minimumDate: null, maximumDate: null, firstDay: 0};
+    if (opts && opts.command) {
+        if (opts.command == 'updateData') {
+            this.get(0).datePicker.updateData(opts.data);
+        }
+        return this;
+    }
+
+    var defaults = {selected: null, minimumDate: null, maximumDate: null, firstDay: 0, data: {}};
     var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
     var abbreviations = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec');
     var days = new Array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
     var daySelector = 'td:not(.m):not(:empty)';
-    var data = {};
     var today = new Date();
+    var hlData = {};
 
     return this.each(function() {
       if (this.datePicker) { return false; }
@@ -15,7 +22,7 @@
       var $container = currentDate = mode = null;
       var self = {
         initialize: function() {
-          $input.click(function (event) {self.show(); return false;}).keydown(function(e){ if (e.keyCode == 13) { self.entered(); return false; }});
+          this.updateData(options.data);
           $container = self.initializeContainer()
             .append(self.buildMonth(new Date()))
             .delegate(daySelector, 'click', self.clicked)
@@ -35,6 +42,23 @@
         },
         hover: function() {
           $(this).toggleClass('hover');
+        },
+        updateData: function(data) {
+          for (var ky in data) {
+            parts = ky.split('-');
+            for (x in parts) {
+                parts[x] = parseInt(parts[x]);
+            }
+
+            if (!(parts[0] in hlData)) {
+                hlData[parts[0]] = {};
+            }
+            if (!(parts[1] in hlData[parts[0]])) {
+                hlData[parts[0]][parts[1]] = {};
+            }
+
+            hlData[parts[0]][parts[1]][parts[2]] = data[ky];
+          };
         },
         clicked: function() {
           var $cell = $(this);
@@ -79,7 +103,6 @@
           year.innerHTML = currentDate.getFullYear();
 
           //could make this static...
-          // but you should not - cause we can not dynamicly change month name anymore...
           for (var i = 0; i < 3; ++i) {
             var row = table.insertRow(-1);
             for (var j = 0; j < 4; ++j) {
@@ -98,11 +121,12 @@
           var totalDays = last.getDate();
           var weeks = Math.ceil((totalDays + firstDay) / 7);
           var table = document.createElement('table');
-          var hl = (today.getFullYear() == date.getFullYear() && today.getMonth() == date.getMonth()) ? today.getDate() : undefined;
+          var hl_today = (today.getFullYear() == date.getFullYear() && today.getMonth() == date.getMonth()) ? today.getDate() : undefined;
+          var hl = (date.getFullYear() in hlData && date.getMonth()+1 in hlData[date.getFullYear()]) ? hlData[date.getFullYear()][date.getMonth()+1] : {};
 
           var row = table.insertRow(-1);
           row.className = 'head';
-          weekend_cols = new Array();
+          weekend_cols = [];
           for(var i = 0, count = 0; count < 7; count++, i++) {
             var cell = row.insertCell(-1);
             if (i+options.firstDay > days.length-1) {
@@ -121,10 +145,14 @@
               var cell = row.insertCell(-1);
               if (count > firstDay && count <= totalDays + firstDay) {
                 vl = count - firstDay;
-                if (hl && hl == vl) {
+                if (hl_today && hl_today == vl) {
                   cell.className = 'today';
                 } else if (j == weekend_cols[0] || j == weekend_cols[1]) {
                   cell.className = 'weekend';
+                }
+                if (vl in hl) {
+                    cell.className += ' hl';
+                    vl = '<span title="' + hl[vl] + '">' + vl + '</span>';
                 }
                 cell.innerHTML = vl;
               }

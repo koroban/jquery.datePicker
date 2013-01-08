@@ -15,7 +15,12 @@
     <script type="text/javascript">
     $(document).ready(function() {
       $('#datep').datePicker({
-        'firstDay' : 0
+        'firstDay' : 0,
+        'data' : {
+            '2013-01-01' : 'test value text',
+            '2013-01-05' : 'more text values',
+            '2013-02-04' : 'Birthday',
+        }
       });
     });
     </script>
